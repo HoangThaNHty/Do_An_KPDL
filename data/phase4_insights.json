@@ -1,0 +1,65 @@
+{
+  "sentiment_percentages": {
+    "negative": 51.3,
+    "positive": 31.7,
+    "neutral": 17.0
+  },
+  "top_topic_by_sentiment": {
+    "negative": {
+      "topic": "facility",
+      "pct": 95.6
+    },
+    "neutral": {
+      "topic": "others",
+      "pct": 28.3
+    },
+    "positive": {
+      "topic": "lecturer",
+      "pct": 62.1
+    }
+  },
+  "top_negative_words": {
+    "học": 10229,
+    "không": 7513,
+    "viên": 3898,
+    "ạ": 3350,
+    "sinh": 2981,
+    "môn": 2636,
+    "thầy": 2350,
+    "bài": 2334,
+    "giảng": 2219,
+    "trường": 2137,
+    "nhiều": 2004,
+    "mình": 1932,
+    "thi": 1747,
+    "thực": 1691,
+    "làm": 1687,
+    "tập": 1674,
+    "ngành": 1643,
+    "dạy": 1631,
+    "lớp": 1619,
+    "hơn": 1586
+  },
+  "top_positive_words": {
+    "viên": 3765,
+    "giảng": 3164,
+    "dạy": 3144,
+    "tình": 3041,
+    "học": 2979,
+    "thầy": 2829,
+    "nhiệt": 2610,
+    "sinh": 2441,
+    "dễ": 1858,
+    "không": 1772,
+    "hiểu": 1700,
+    "bài": 1660,
+    "tâm": 1415,
+    "tận": 1333,
+    "cô": 1265,
+    "vui": 978,
+    "nhiều": 971,
+    "kiến": 886,
+    "thức": 883,
+    "tập": 871
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "uit_vsfc": {
+      "rows": 16175,
+      "columns": [
+        "text",
+        "sentiment",
+        "topic",
+        "split",
+        "source"
+      ],
+      "missing_per_column": {
+        "text": 0,
+        "sentiment": 0,
+        "topic": 0,
+        "split": 0,
+        "source": 0
+      },
+      "sentiment_distribution": {
+        "positive": 8038,
+        "negative": 7439,
+        "neutral": 698
+      },
+      "topic_distribution": {
+        "lecturer": 11607,
+        "training_program": 3040,
+        "others": 816,
+        "facility": 712
+      }
+    },
+    "neu_esc": {
+      "rows": 32966,
+      "columns": [
+        "text",
+        "sentiment",
+        "split",
+        "source",
+        "topic"
+      ],
+      "missing_per_column": {
+        "text": 0,
+        "sentiment": 0,
+        "split": 0,
+        "source": 0,
+        "topic": 0
+      },
+      "sentiment_distribution": {
+        "negative": 22773,
+        "positive": 5200,
+        "neutral": 4148,
+        "toxic": 845
+      },
+      "topic_distribution": {
+        "lecturer": 14402,
+        "academic": 10512,
+        "program": 2358,
+        "administrative": 1478,
+        "facility": 902,
+        "social": 808,
+        "student_service": 769,
+        "financial": 670,
+        "other": 662,
+        "general": 405
+      }
+    },
+    "neu_esc_filtered": {
+      "rows": 10388,
+      "columns": [
+        "text",
+        "sentiment",
+        "split",
+        "source",
+        "topic"
+      ],
+      "missing_per_column": {
+        "text": 0,
+        "sentiment": 0,
+        "split": 0,
+        "source": 0,
+        "topic": 0
+      },
+      "sentiment_distribution": {
+        "negative": 7827,
+        "positive": 1383,
+        "neutral": 1178
+      },
+      "topic_distribution": {
+        "academic": 10388
+      }
+    },
+    "synthetic": {
+      "rows": 3174,
+      "columns": [
+        "text",
+        "sentiment",
+        "gen_method",
+        "source"
+      ],
+      "missing_per_column": {
+        "text": 0,
+        "sentiment": 0,
+        "gen_method": 0,
+        "source": 0
+      },
+      "sentiment_distribution": {
+        "neutral": 3174
+      }
+    }
+  },
+  "issues": []
+}

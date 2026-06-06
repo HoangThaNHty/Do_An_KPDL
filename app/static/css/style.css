@@ -1,0 +1,75 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.stat-card {
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.progress {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+
+.btn {
+    border-radius: 8px;
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 2px;
+}
+
+footer {
+    font-size: 0.85rem;
+}
+
+.sentiment-badge {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+#resultCard {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.text-truncate {
+    cursor: help;
+}

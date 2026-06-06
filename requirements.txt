@@ -1,0 +1,15 @@
+datasets
+pandas
+numpy
+scikit-learn
+underthesea
+matplotlib
+seaborn
+wordcloud
+fastapi
+uvicorn
+pymongo
+python-dotenv
+jinja2
+pyarrow
+python-multipart

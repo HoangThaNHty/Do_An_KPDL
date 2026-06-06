@@ -1,0 +1,26 @@
+{
+  "train_rows": 23913,
+  "val_rows": 2658,
+  "test_rows": 3166,
+  "total_rows": 29737,
+  "train_sentiment": {
+    "negative": 12471,
+    "positive": 7048,
+    "neutral": 4394
+  },
+  "val_sentiment": {
+    "negative": 1386,
+    "positive": 783,
+    "neutral": 489
+  },
+  "test_sentiment": {
+    "positive": 1590,
+    "negative": 1409,
+    "neutral": 167
+  },
+  "sources": {
+    "uit_vsfc": 16175,
+    "neu_esc": 10388,
+    "synthetic": 3174
+  }
+}

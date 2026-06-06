@@ -1,0 +1,39 @@
+# ---- Environment ----
+.env
+.env.local
+.env.*.local
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+*.log
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- OS ----
+desktop.ini
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+profile_default/
+
+# ---- Large intermediate files (regenerable) ----
+# Uncomment next line to exclude raw datasets (already preprocessed ones stay)
+# data/*_raw.parquet
+# data/*_normalized.parquet

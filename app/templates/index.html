@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Trang chủ{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h4 class="mb-0"><i class="fas fa-search text-primary me-2"></i>Phân tích phản hồi</h4>
+                <small class="text-muted">Nhập phản hồi của sinh viên để dự đoán sentiment</small>
+            </div>
+            <div class="card-body">
+                {% if message %}
+                <div class="alert alert-warning alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="/predict">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nhập phản hồi:</label>
+                        <textarea name="text" class="form-control" rows="4" placeholder="VD: Thầy dạy rất nhiệt tình và dễ hiểu" required>{{ text or '' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-magic me-2"></i>Phân tích
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if result %}
+        <div class="card shadow-sm mb-4 border-0" id="resultCard">
+            <div class="card-header {% if result.sentiment == 'positive' %}bg-success{% elif result.sentiment == 'negative' %}bg-danger{% else %}bg-info{% endif %} text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-check me-2"></i>Kết quả phân tích
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center mb-3">
+                        <div class="sentiment-badge {% if result.sentiment == 'positive' %}bg-success{% elif result.sentiment == 'negative' %}bg-danger{% else %}bg-info{% endif %} text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width:120px;height:120px;">
+                            <div>
+                                <i class="fas {% if result.sentiment == 'positive' %}fa-smile{% elif result.sentiment == 'negative' %}fa-frown{% else %}fa-meh{% endif %} fa-2x mb-1"></i>
+                                <div class="fw-bold fs-6">{{ result.sentiment_vi }}</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-muted small">
+                            Độ tin cậy: <strong>{{ result.max_confidence }}%</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Chi tiết độ tin cậy:</h6>
+                        {% for cls, prob in result.confidence.items() %}
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small">
+                                <span>{{ cls }}</span>
+                                <span>{{ prob }}%</span>
+                            </div>
+                            <div class="progress" style="height:8px;">
+                                <div class="progress-bar {% if cls == 'positive' %}bg-success{% elif cls == 'negative' %}bg-danger{% else %}bg-info{% endif %}" style="width:{{ prob }}%"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <hr>
+                <div class="small text-muted">
+                    <strong>Văn bản gốc:</strong> {{ result.text }}<br>
+                    <strong>Sau khi làm sạch:</strong> {{ result.cleaned }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie text-primary me-2"></i>Thống kê nhanh</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="stat-card bg-primary text-white rounded-3 p-3">
+                            <div class="fs-2 fw-bold">{{ stats.total }}</div>
+                            <div class="small">Tổng phản hồi</div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="stat-card bg-success text-white rounded-3 p-3">
+                            <div class="fs-2 fw-bold">{{ stats.sentiment.get('positive', 0) }}</div>
+                            <div class="small">Tích cực</div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="stat-card bg-danger text-white rounded-3 p-3">
+                            <div class="fs-2 fw-bold">{{ stats.sentiment.get('negative', 0) }}</div>
+                            <div class="small">Tiêu cực</div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="stat-card bg-info text-white rounded-3 p-3">
+                            <div class="fs-2 fw-bold">{{ stats.sentiment.get('neutral', 0) }}</div>
+                            <div class="small">Trung tính</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/dashboard" class="btn btn-outline-primary w-100 mt-2">
+                    <i class="fas fa-chart-bar me-1"></i>Xem dashboard chi tiết
+                </a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle text-primary me-2"></i>Hướng dẫn</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-2">Nhập phản hồi sinh viên vào ô văn bản</li>
+                    <li class="mb-2">Nhấn <strong>Phân tích</strong> để dự đoán sentiment</li>
+                    <li class="mb-2">Kết quả hiển thị: <span class="badge bg-success">Tích cực</span> / <span class="badge bg-danger">Tiêu cực</span> / <span class="badge bg-info">Trung tính</span></li>
+                    <li class="mb-2">Dữ liệu tự động lưu vào cơ sở dữ liệu MongoDB</li>
+                    <li>Xem <a href="/feedbacks">Danh sách</a> để quản lý và tìm kiếm</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+{
+  "cross_domain_test": "UIT train -> NEU-ESC test",
+  "f1_macro": 0.2907
+}

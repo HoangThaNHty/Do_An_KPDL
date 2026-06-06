@@ -1,0 +1,32 @@
+{
+  "nb_val": {
+    "accuracy": 0.7885628291948834,
+    "precision_macro": 0.8138748092157172,
+    "recall_macro": 0.719226458560779,
+    "f1_macro": 0.7472315152759927,
+    "f1_weighted": 0.7799105915677591
+  },
+  "lr_val": {
+    "accuracy": 0.8054928517682468,
+    "precision_macro": 0.7804862778042065,
+    "recall_macro": 0.7988666182376075,
+    "f1_macro": 0.7881655871389621,
+    "f1_weighted": 0.8071891635708608
+  },
+  "nb_test": {
+    "accuracy": 0.8209096651926722,
+    "precision_macro": 0.6234616786674607,
+    "recall_macro": 0.6096853469567688,
+    "f1_macro": 0.6123899127196806,
+    "f1_weighted": 0.8129742946928354
+  },
+  "lr_test": {
+    "accuracy": 0.8114339861023373,
+    "precision_macro": 0.6610732081140007,
+    "recall_macro": 0.700954810654011,
+    "f1_macro": 0.6665075334741518,
+    "f1_weighted": 0.8276178485438533
+  },
+  "selected_model": "lr",
+  "selected_reason": "Higher F1 Macro on test set"
+}
