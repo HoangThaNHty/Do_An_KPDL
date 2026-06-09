@@ -27,6 +27,7 @@ def test_predict_api_valid_and_empty(monkeypatch) -> None:
         response = client.post("/api/predict", json={"text": "Thầy dạy dễ hiểu"})
         assert response.status_code == 200
         assert response.json()["sentiment"]["label"] == "positive"
+        assert response.json()["topic"]["label"] == "lecturer"
 
         empty_response = client.post("/api/predict", json={"text": "   "})
         assert empty_response.status_code == 422
@@ -70,3 +71,30 @@ def test_feedback_api_rejects_invalid_labels() -> None:
             },
         )
         assert response.status_code == 422
+
+
+def test_export_csv_uses_utf8_bom(monkeypatch) -> None:
+    monkeypatch.setattr(
+        main,
+        "get_all_feedbacks",
+        lambda skip, limit: (
+            [
+                {
+                    "sentence": "Giảng viên dạy rất dễ hiểu",
+                    "sentiment": {"label": "positive"},
+                    "topic": {"label": "lecturer"},
+                    "processed_text": "giảng_viên dạy dễ hiểu",
+                    "keywords": ["giảng viên", "dễ hiểu"],
+                    "source": "UIT-VSFC",
+                    "split": "test",
+                    "created_at": "2026-06-09T00:00:00",
+                }
+            ],
+            1,
+        ),
+    )
+    with TestClient(main.app) as client:
+        response = client.get("/api/export")
+        assert response.status_code == 200
+        assert response.content.startswith(b"\xef\xbb\xbf")
+        assert "Giảng viên dạy rất dễ hiểu" in response.content.decode("utf-8-sig")

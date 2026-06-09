@@ -21,13 +21,25 @@ def main() -> None:
     if model_service.ready:
         result = model_service.predict("giảng viên dạy dễ hiểu và nhiệt tình")
         print(
-            "[OK] Predict:",
+            "[OK] Predict sentiment:",
             result["sentiment"]["label"],
-            "/",
+            f"({result['sentiment']['confidence']:.2%})",
+        )
+        print(
+            "[OK] Predict topic:",
             result["topic"]["label"],
+            f"({result['topic']['confidence']:.2%})",
         )
     if connected:
-        print("[OK] Stats:", get_stats()["total"], "feedbacks")
+        stats = get_stats()
+        print("[OK] Stats:", stats["total"], "feedbacks")
+        print(
+            "[OK] Data origin:",
+            stats["data_origin"]["uit_vsfc"],
+            "UIT-VSFC /",
+            stats["data_origin"]["manual_demo"],
+            "manual-demo",
+        )
 
 
 if __name__ == "__main__":

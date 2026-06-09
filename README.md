@@ -16,6 +16,11 @@ dashboard.
 | Frontend | Jinja2, Bootstrap 5, Chart.js |
 | Dataset | UIT-VSFC (`uitnlp/vietnamese_students_feedback`) |
 
+UIT-VSFC trong hệ thống được dùng đúng với:
+
+- **Sentiment 3 lớp:** `negative`, `neutral`, `positive`.
+- **Topic 4 lớp:** `lecturer`, `training_program`, `facility`, `others`.
+
 ## Chức năng
 
 - Dự đoán sentiment: `positive`, `neutral`, `negative`.
@@ -23,6 +28,7 @@ dashboard.
 - Lưu phản hồi và metadata vào MongoDB.
 - Tìm kiếm, lọc, phân trang, thêm, sửa, xóa phản hồi.
 - Dashboard sentiment, topic, split, phản hồi tiêu cực và khuyến nghị.
+- Dashboard tách riêng số lượng UIT-VSFC gốc và phản hồi manual/demo.
 - Import CSV/Parquet chống trùng và export CSV.
 - REST API có validation và Swagger tại `/docs`.
 - Hiển thị cảnh báo thân thiện khi thiếu MongoDB hoặc model.
@@ -66,10 +72,17 @@ Yêu cầu: Python 3.11 trở lên và MongoDB Community Server.
 
 ```powershell
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 Copy-Item .env.example .env
+```
+
+Nếu PowerShell chặn script kích hoạt, chạy một lần trong cửa sổ hiện tại:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate.ps1
 ```
 
 Nội dung cấu hình mặc định:

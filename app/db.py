@@ -14,10 +14,15 @@ from app.config import settings
 
 SENTIMENT_CODES = {"negative": 0, "neutral": 1, "positive": 2}
 TOPIC_CODES = {"lecturer": 0, "training_program": 1, "facility": 2, "others": 3}
+DATABASE_ERROR_MESSAGE = (
+    "Không thể kết nối MongoDB. Hãy bật dịch vụ MongoDB và kiểm tra "
+    "MONGO_URI trong file .env"
+)
 
 
 class DatabaseUnavailable(RuntimeError):
-    pass
+    def __init__(self, detail: str | None = None) -> None:
+        super().__init__(DATABASE_ERROR_MESSAGE)
 
 
 _client: MongoClient | None = None
@@ -42,8 +47,8 @@ def check_connection() -> tuple[bool, str | None]:
     try:
         get_client().admin.command("ping")
         return True, None
-    except PyMongoError as exc:
-        return False, f"Không thể kết nối MongoDB: {exc}"
+    except PyMongoError:
+        return False, DATABASE_ERROR_MESSAGE
 
 
 def init_database() -> None:
@@ -303,6 +308,12 @@ def get_stats() -> dict[str, Any]:
         sentiment = _distribution("sentiment.label")
         topic = _distribution("topic.label")
         split = _distribution("split")
+        data_origin = {
+            "uit_vsfc": collection.count_documents(
+                {"split": {"$in": ["train", "validation", "test"]}}
+            ),
+            "manual_demo": collection.count_documents({"split": "manual"}),
+        }
         negative_by_topic = {
             str(item["_id"]): int(item["count"])
             for item in collection.aggregate(
@@ -340,6 +351,7 @@ def get_stats() -> dict[str, Any]:
             "sentiment": sentiment,
             "topic": topic,
             "split": split,
+            "data_origin": data_origin,
             "negative_by_topic": negative_by_topic,
             "recent_negative": recent_negative,
             "recommendations": recommendations,
@@ -354,6 +366,7 @@ def empty_stats() -> dict[str, Any]:
         "sentiment": {},
         "topic": {},
         "split": {},
+        "data_origin": {"uit_vsfc": 0, "manual_demo": 0},
         "negative_by_topic": {},
         "recent_negative": [],
         "recommendations": [],

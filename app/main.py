@@ -587,10 +587,15 @@ async def api_export():
         }
         for item in documents
     ]
-    buffer = io.StringIO()
+    buffer = io.BytesIO()
     pd.DataFrame(rows).to_csv(buffer, index=False, encoding="utf-8-sig")
+    buffer.seek(0)
     return StreamingResponse(
-        iter([buffer.getvalue()]),
+        buffer,
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": "attachment; filename=sfas_feedbacks.csv"},
+        headers={
+            "Content-Disposition": (
+                'attachment; filename="sfas_feedbacks_utf8.csv"'
+            )
+        },
     )

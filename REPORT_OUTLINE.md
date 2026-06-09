@@ -111,7 +111,8 @@
 
 - Trang chủ: nhập câu, xem hai kết quả và độ tin cậy, lưu MongoDB.
 - Trang phản hồi: tìm kiếm, lọc sentiment/topic/split, CRUD, phân trang.
-- Dashboard: thống kê, ba biểu đồ, phản hồi tiêu cực, khuyến nghị.
+- Dashboard: thống kê, phân biệt UIT-VSFC với manual/demo, ba biểu đồ, phản hồi
+  tiêu cực và khuyến nghị.
 - Trang giới thiệu: mô tả đề tài, dataset, MongoDB và pipeline.
 - Swagger `/docs`: chứng minh REST API và validation.
 - Chèn ảnh chụp từng màn hình.
