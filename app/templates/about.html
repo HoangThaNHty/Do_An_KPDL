@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Giới thiệu đề tài{% endblock %}
+
+{% block content %}
+<div class="about-header mb-4">
+    <span class="eyebrow">ĐỒ ÁN KHAI PHÁ DỮ LIỆU</span>
+    <h1 class="fw-bold mt-2">Quản lý và khai thác dữ liệu phản hồi sinh viên</h1>
+    <p class="lead mb-0">Từ văn bản tiếng Việt phi cấu trúc đến dự đoán và dashboard hỗ trợ ra quyết định.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100"><div class="card-body p-4">
+            <h4 class="fw-bold">Bài toán</h4>
+            <p>Phản hồi sinh viên thường là văn bản tự do, khó tổng hợp bằng các truy vấn dữ liệu truyền thống. SFAS tổ chức mỗi phản hồi thành một document MongoDB linh hoạt, đồng thời dùng học máy để tự động gán nhãn cảm xúc và chủ đề.</p>
+            <h4 class="fw-bold mt-4">Dataset UIT-VSFC</h4>
+            <p>Bộ dữ liệu Vietnamese Students' Feedback Corpus gồm phản hồi tiếng Việt được gán nhãn ba lớp cảm xúc và bốn nhóm chủ đề: giảng viên, chương trình đào tạo, cơ sở vật chất và nhóm khác.</p>
+            <h4 class="fw-bold mt-4">MongoDB và dữ liệu phi cấu trúc</h4>
+            <p class="mb-0">MongoDB lưu dữ liệu dưới dạng document BSON. Cấu trúc lồng cho phép lưu đồng thời câu gốc, nhãn thật, kết quả dự đoán, từ khóa và metadata mà không cần ép mọi thông tin vào bảng quan hệ cố định.</p>
+        </div></div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100"><div class="card-body p-4">
+            <h4 class="fw-bold">Pipeline hệ thống</h4>
+            <div class="pipeline-vertical mt-4">
+                <div><strong>1. Dataset</strong><span>UIT-VSFC / dữ liệu nhập tay</span></div>
+                <div><strong>2. Tiền xử lý</strong><span>Unicode, teencode, tách từ tiếng Việt</span></div>
+                <div><strong>3. MongoDB</strong><span>Lưu và quản lý document phản hồi</span></div>
+                <div><strong>4. TF-IDF</strong><span>Biểu diễn đặc trưng văn bản</span></div>
+                <div><strong>5. Phân loại</strong><span>Sentiment và topic</span></div>
+                <div><strong>6. Dashboard</strong><span>Thống kê và khuyến nghị</span></div>
+            </div>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

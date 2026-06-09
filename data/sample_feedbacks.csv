@@ -1,0 +1,31 @@
+sentence,sentiment,topic
+Giảng viên dạy dễ hiểu và rất nhiệt tình,positive,lecturer
+Thầy luôn giải đáp câu hỏi của sinh viên,positive,lecturer
+Cô chuẩn bị bài giảng đầy đủ và sinh động,positive,lecturer
+Giảng viên thân thiện và chấm bài công bằng,positive,lecturer
+Thầy nói hơi nhanh nhưng nội dung vẫn rõ ràng,neutral,lecturer
+Giảng viên thường xuyên đi trễ,negative,lecturer
+Cách giảng khó hiểu và ít ví dụ thực tế,negative,lecturer
+Thầy ít tương tác với sinh viên trong giờ học,negative,lecturer
+Chương trình học có nhiều môn hữu ích,positive,training_program
+Nội dung đào tạo phù hợp với ngành học,positive,training_program
+Các môn được sắp xếp khá hợp lý,positive,training_program
+Chương trình học còn nặng lý thuyết,negative,training_program
+Một số môn có nội dung bị trùng lặp,negative,training_program
+Lịch học phân bố chưa hợp lý,negative,training_program
+Khối lượng bài tập ở mức vừa phải,neutral,training_program
+Phòng học sạch sẽ và có máy lạnh tốt,positive,facility
+Thư viện có nhiều tài liệu tham khảo hữu ích,positive,facility
+Khuôn viên trường rộng và thoáng,positive,facility
+Phòng máy quá cũ và mạng rất yếu,negative,facility
+Máy chiếu thường xuyên bị hỏng,negative,facility
+Nhà vệ sinh chưa sạch sẽ,negative,facility
+Wifi trong trường chập chờn,negative,facility
+Căn tin có giá hợp lý,neutral,facility
+Hoạt động ngoại khóa rất bổ ích,positive,others
+Nhân viên phòng đào tạo hỗ trợ nhiệt tình,positive,others
+Thủ tục hành chính còn mất nhiều thời gian,negative,others
+Thông báo của trường thường được gửi muộn,negative,others
+Các câu lạc bộ hoạt động khá sôi nổi,positive,others
+Trang web sinh viên đôi khi truy cập chậm,neutral,others
+Môi trường học tập nhìn chung ổn định,neutral,others

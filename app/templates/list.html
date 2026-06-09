@@ -1,184 +1,180 @@
 {% extends "base.html" %}
-{% block title %}Danh sách phản hồi{% endblock %}
+{% block title %}Quản lý phản hồi{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="mb-0"><i class="fas fa-list text-primary me-2"></i>Danh sách phản hồi</h3>
-    <span class="badge bg-primary fs-6">{{ total }} bản ghi</span>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <div>
+        <span class="eyebrow">MONGODB COLLECTION</span>
+        <h2 class="fw-bold mb-0">Quản lý phản hồi</h2>
+    </div>
+    <span class="dataset-pill">{{ total }} document</span>
 </div>
 
-<!-- Search + Filter -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <form method="GET" action="/feedbacks" class="row g-3 align-items-end">
-            <div class="col-md-5">
-                <label class="form-label">Tìm kiếm</label>
-                <input type="text" name="search" class="form-control" placeholder="Nhập từ khóa..." value="{{ search or '' }}">
+            <div class="col-lg-4">
+                <label class="form-label">Tìm theo nội dung</label>
+                <input name="search" class="form-control" value="{{ search or '' }}" placeholder="Nhập từ khóa...">
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Sentiment</label>
+            <div class="col-md-3 col-lg-2">
+                <label class="form-label">Cảm xúc</label>
                 <select name="sentiment" class="form-select">
                     <option value="">Tất cả</option>
-                    <option value="positive" {% if sentiment_filter == 'positive' %}selected{% endif %}>Tích cực</option>
-                    <option value="negative" {% if sentiment_filter == 'negative' %}selected{% endif %}>Tiêu cực</option>
-                    <option value="neutral" {% if sentiment_filter == 'neutral' %}selected{% endif %}>Trung tính</option>
+                    {% for key, label in SENTIMENT_MAP.items() %}
+                    <option value="{{ key }}" {% if sentiment_filter == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-filter me-1"></i>Lọc
-                </button>
+            <div class="col-md-3 col-lg-2">
+                <label class="form-label">Chủ đề</label>
+                <select name="topic" class="form-select">
+                    <option value="">Tất cả</option>
+                    {% for key, label in TOPIC_MAP.items() %}
+                    <option value="{{ key }}" {% if topic_filter == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="col-md-2">
-                <a href="/feedbacks" class="btn btn-outline-secondary w-100">
-                    <i class="fas fa-undo me-1"></i>Reset
-                </a>
+            <div class="col-md-3 col-lg-2">
+                <label class="form-label">Tập dữ liệu</label>
+                <select name="split" class="form-select">
+                    <option value="">Tất cả</option>
+                    {% for key, label in SPLIT_MAP.items() %}
+                    <option value="{{ key }}" {% if split_filter == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 col-lg-2 d-flex gap-2">
+                <button class="btn btn-primary flex-fill"><i class="fas fa-filter"></i></button>
+                <a href="/feedbacks" class="btn btn-outline-secondary flex-fill"><i class="fas fa-rotate-left"></i></a>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Add new -->
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0"><i class="fas fa-plus-circle text-success me-2"></i>Thêm phản hồi mới</h5>
-    </div>
     <div class="card-body">
         <form method="POST" action="/feedback/add" class="d-flex gap-2">
-            <input type="text" name="text" class="form-control" placeholder="Nhập phản hồi sinh viên..." required>
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-plus me-1"></i>Thêm
-            </button>
+            <input name="text" class="form-control" maxlength="5000" placeholder="Thêm phản hồi và tự động phân tích..." required>
+            <button class="btn btn-success text-nowrap"><i class="fas fa-plus me-1"></i>Thêm</button>
         </form>
     </div>
 </div>
 
-<!-- Table -->
-<div class="card shadow-sm">
+<div class="card shadow-sm overflow-hidden">
     <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
                 <tr>
-                    <th>#</th>
                     <th>Nội dung</th>
-                    <th>Sentiment</th>
-                    <th>Độ tin cậy</th>
-                    <th>Thời gian</th>
-                    <th>Thao tác</th>
+                    <th>Cảm xúc</th>
+                    <th>Chủ đề</th>
+                    <th>Split</th>
+                    <th>Ngày tạo</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for fb in feedbacks %}
+                {% for feedback in feedbacks %}
                 <tr>
-                    <td>{{ loop.index + (page - 1) * 20 }}</td>
-                    <td class="text-truncate" style="max-width:300px;" title="{{ fb.text }}">{{ fb.text }}</td>
                     <td>
-                        {% if fb.sentiment == 'positive' %}
-                        <span class="badge bg-success"><i class="fas fa-smile me-1"></i>Tích cực</span>
-                        {% elif fb.sentiment == 'negative' %}
-                        <span class="badge bg-danger"><i class="fas fa-frown me-1"></i>Tiêu cực</span>
-                        {% else %}
-                        <span class="badge bg-info"><i class="fas fa-meh me-1"></i>Trung tính</span>
-                        {% endif %}
+                        <div class="feedback-sentence" title="{{ feedback.sentence }}">{{ feedback.sentence }}</div>
+                        <small class="text-muted">{{ feedback.source }}</small>
                     </td>
-                    <td>{% if fb.confidence %}{{ fb.confidence | round(1) }}%{% else %}-{% endif %}</td>
-                    <td class="small text-muted">{{ fb.timestamp[:16] if fb.timestamp else '-' }}</td>
+                    <td><span class="badge label-{{ feedback.sentiment.label }}">{{ SENTIMENT_MAP[feedback.sentiment.label] }}</span></td>
+                    <td>{{ TOPIC_MAP[feedback.topic.label] }}</td>
+                    <td><span class="badge text-bg-light border">{{ feedback.split }}</span></td>
+                    <td class="small text-muted text-nowrap">{{ feedback.created_at[:10] if feedback.created_at else '-' }}</td>
                     <td>
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal"
-                                data-id="{{ fb._id }}" data-text="{{ fb.text }}" data-sentiment="{{ fb.sentiment }}"
-                                title="Sửa">
-                                <i class="fas fa-edit"></i>
+                            <button class="btn btn-outline-primary edit-button"
+                                data-bs-toggle="modal" data-bs-target="#editModal"
+                                data-id="{{ feedback._id }}"
+                                data-text="{{ feedback.sentence }}"
+                                data-sentiment="{{ feedback.sentiment.label }}"
+                                data-topic="{{ feedback.topic.label }}"
+                                data-split="{{ feedback.split }}">
+                                <i class="fas fa-pen"></i>
                             </button>
-                            <form method="POST" action="/feedback/{{ fb._id }}/delete" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                <button type="submit" class="btn btn-outline-danger" title="Xóa">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                            <form method="POST" action="/feedback/{{ feedback._id }}/delete"
+                                onsubmit="return confirm('Xóa phản hồi này?')">
+                                <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
                             </form>
                         </div>
                     </td>
                 </tr>
                 {% else %}
-                <tr>
-                    <td colspan="6" class="text-center text-muted py-5">
-                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                        Chưa có dữ liệu phản hồi
-                    </td>
-                </tr>
+                <tr><td colspan="6" class="text-center text-muted py-5">Chưa có dữ liệu phù hợp.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Pagination -->
 {% if total_pages > 1 %}
-<nav class="mt-4 d-flex justify-content-center">
-    <ul class="pagination">
-        <li class="page-item {% if page == 1 %}disabled{% endif %}">
-            <a class="page-link" href="?page={{ page - 1 }}&sentiment={{ sentiment_filter or '' }}&topic={{ topic_filter or '' }}&search={{ search or '' }}">
-                <i class="fas fa-chevron-left"></i>
-            </a>
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% for number in range(1, total_pages + 1) %}
+        {% if number == 1 or number == total_pages or (number >= page - 2 and number <= page + 2) %}
+        <li class="page-item {% if number == page %}active{% endif %}">
+            <a class="page-link" href="?page={{ number }}&search={{ search or '' }}&sentiment={{ sentiment_filter or '' }}&topic={{ topic_filter or '' }}&split={{ split_filter or '' }}">{{ number }}</a>
         </li>
-        {% for p in range(1, total_pages + 1) %}
-        {% if p <= 3 or p >= total_pages - 2 or (p >= page - 2 and p <= page + 2) %}
-        <li class="page-item {% if p == page %}active{% endif %}">
-            <a class="page-link" href="?page={{ p }}&sentiment={{ sentiment_filter or '' }}&topic={{ topic_filter or '' }}&search={{ search or '' }}">{{ p }}</a>
-        </li>
-        {% elif p == 4 or p == total_pages - 3 %}
-        <li class="page-item disabled"><span class="page-link">...</span></li>
         {% endif %}
         {% endfor %}
-        <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-            <a class="page-link" href="?page={{ page + 1 }}&sentiment={{ sentiment_filter or '' }}&topic={{ topic_filter or '' }}&search={{ search or '' }}">
-                <i class="fas fa-chevron-right"></i>
-            </a>
-        </li>
     </ul>
 </nav>
 {% endif %}
 
-<!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <form class="modal-content" id="editForm" method="POST">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Sửa phản hồi</h5>
+                <h5 class="modal-title">Sửa phản hồi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="editForm" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Nội dung</label>
-                        <textarea name="text" class="form-control" rows="3" id="editText" required></textarea>
+            <div class="modal-body">
+                <label class="form-label">Nội dung</label>
+                <textarea class="form-control mb-3" id="editText" name="text" rows="4" required></textarea>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Cảm xúc</label>
+                        <select class="form-select" id="editSentiment" name="sentiment">
+                            {% for key, label in SENTIMENT_MAP.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+                        </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Sentiment</label>
-                        <select name="sentiment" class="form-select" id="editSentiment">
-                            <option value="positive">Tích cực</option>
-                            <option value="neutral">Trung tính</option>
-                            <option value="negative">Tiêu cực</option>
+                    <div class="col-md-4">
+                        <label class="form-label">Chủ đề</label>
+                        <select class="form-select" id="editTopic" name="topic">
+                            {% for key, label in TOPIC_MAP.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Split</label>
+                        <select class="form-select" id="editSplit" name="split">
+                            {% for key, label in SPLIT_MAP.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Lưu</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-const editModal = document.getElementById('editModal');
-editModal.addEventListener('show.bs.modal', function(event) {
-    const btn = event.relatedTarget;
-    document.getElementById('editText').value = btn.dataset.text;
-    document.getElementById('editSentiment').value = btn.dataset.sentiment;
-    document.getElementById('editForm').action = '/feedback/' + btn.dataset.id + '/update';
+document.querySelectorAll('.edit-button').forEach((button) => {
+    button.addEventListener('click', () => {
+        document.getElementById('editForm').action = `/feedback/${button.dataset.id}/update`;
+        document.getElementById('editText').value = button.dataset.text;
+        document.getElementById('editSentiment').value = button.dataset.sentiment;
+        document.getElementById('editTopic').value = button.dataset.topic;
+        document.getElementById('editSplit').value = button.dataset.split;
+    });
 });
 </script>
 {% endblock %}
