@@ -1,133 +1,132 @@
 {% extends "base.html" %}
-{% block title %}Trang chủ{% endblock %}
+{% block title %}Phân tích phản hồi{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-7">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
-                <h4 class="mb-0"><i class="fas fa-search text-primary me-2"></i>Phân tích phản hồi</h4>
-                <small class="text-muted">Nhập phản hồi của sinh viên để dự đoán sentiment</small>
-            </div>
-            <div class="card-body">
-                {% if message %}
-                <div class="alert alert-warning alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                {% endif %}
+<section class="hero-panel mb-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <span class="eyebrow">STUDENT FEEDBACK ANALYTICS SYSTEM</span>
+            <h1 class="display-6 fw-bold mt-2">Biến phản hồi phi cấu trúc thành thông tin hữu ích</h1>
+            <p class="lead mb-0">Phân loại cảm xúc và chủ đề bằng TF-IDF + Logistic Regression.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+            <span class="dataset-pill"><i class="fas fa-database me-2"></i>UIT-VSFC · MongoDB</span>
+        </div>
+    </div>
+</section>
 
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h4 class="fw-bold"><i class="fas fa-wand-magic-sparkles text-primary me-2"></i>Phân tích phản hồi</h4>
+                <p class="text-muted">Nhập một câu phản hồi tiếng Việt để dự đoán cảm xúc và chủ đề.</p>
                 <form method="POST" action="/predict">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nhập phản hồi:</label>
-                        <textarea name="text" class="form-control" rows="4" placeholder="VD: Thầy dạy rất nhiệt tình và dễ hiểu" required>{{ text or '' }}</textarea>
+                    <textarea id="feedbackText" name="text" class="form-control form-control-lg" rows="5"
+                        maxlength="5000" placeholder="Ví dụ: Giảng viên dạy dễ hiểu và nhiệt tình" required>{{ text or '' }}</textarea>
+                    <div class="d-flex flex-wrap gap-2 my-3">
+                        <button type="button" class="btn btn-sm btn-soft sample-text">giảng viên dạy dễ hiểu và nhiệt tình</button>
+                        <button type="button" class="btn btn-sm btn-soft sample-text">phòng máy quá cũ và mạng rất yếu</button>
+                        <button type="button" class="btn btn-sm btn-soft sample-text">chương trình học còn nặng lý thuyết</button>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                        <i class="fas fa-magic me-2"></i>Phân tích
+                    <button class="btn btn-primary btn-lg w-100" type="submit">
+                        <i class="fas fa-magnifying-glass-chart me-2"></i>Phân tích phản hồi
                     </button>
                 </form>
             </div>
         </div>
 
         {% if result %}
-        <div class="card shadow-sm mb-4 border-0" id="resultCard">
-            <div class="card-header {% if result.sentiment == 'positive' %}bg-success{% elif result.sentiment == 'negative' %}bg-danger{% else %}bg-info{% endif %} text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-clipboard-check me-2"></i>Kết quả phân tích
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-center mb-3">
-                        <div class="sentiment-badge {% if result.sentiment == 'positive' %}bg-success{% elif result.sentiment == 'negative' %}bg-danger{% else %}bg-info{% endif %} text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width:120px;height:120px;">
-                            <div>
-                                <i class="fas {% if result.sentiment == 'positive' %}fa-smile{% elif result.sentiment == 'negative' %}fa-frown{% else %}fa-meh{% endif %} fa-2x mb-1"></i>
-                                <div class="fw-bold fs-6">{{ result.sentiment_vi }}</div>
+        <div class="card shadow-sm mt-4 result-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <span class="eyebrow">KẾT QUẢ DỰ ĐOÁN</span>
+                        <h4 class="fw-bold mt-1 mb-0">{{ result.input }}</h4>
+                    </div>
+                    <form method="POST" action="/feedback/save-prediction">
+                        <input type="hidden" name="text" value="{{ result.input }}">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-floppy-disk me-1"></i>Lưu vào MongoDB
+                        </button>
+                    </form>
+                </div>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <div class="prediction-box">
+                            <span class="text-muted small">Cảm xúc</span>
+                            <div class="d-flex justify-content-between align-items-end mt-2">
+                                <span class="badge label-{{ result.sentiment.label }} fs-6">
+                                    {{ SENTIMENT_MAP[result.sentiment.label] }}
+                                </span>
+                                <strong>{{ (result.sentiment.confidence * 100) | round(1) }}%</strong>
                             </div>
-                        </div>
-                        <div class="mt-2 text-muted small">
-                            Độ tin cậy: <strong>{{ result.max_confidence }}%</strong>
+                            <div class="progress mt-3">
+                                <div class="progress-bar bg-primary" style="width: {{ result.sentiment.confidence * 100 }}%"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="fw-bold mb-3">Chi tiết độ tin cậy:</h6>
-                        {% for cls, prob in result.confidence.items() %}
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-between small">
-                                <span>{{ cls }}</span>
-                                <span>{{ prob }}%</span>
+                        <div class="prediction-box">
+                            <span class="text-muted small">Chủ đề</span>
+                            <div class="d-flex justify-content-between align-items-end mt-2">
+                                <span class="badge bg-dark fs-6">{{ TOPIC_MAP[result.topic.label] }}</span>
+                                <strong>{{ (result.topic.confidence * 100) | round(1) }}%</strong>
                             </div>
-                            <div class="progress" style="height:8px;">
-                                <div class="progress-bar {% if cls == 'positive' %}bg-success{% elif cls == 'negative' %}bg-danger{% else %}bg-info{% endif %}" style="width:{{ prob }}%"></div>
+                            <div class="progress mt-3">
+                                <div class="progress-bar bg-info" style="width: {{ result.topic.confidence * 100 }}%"></div>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
-
-                <hr>
-                <div class="small text-muted">
-                    <strong>Văn bản gốc:</strong> {{ result.text }}<br>
-                    <strong>Sau khi làm sạch:</strong> {{ result.cleaned }}
+                <div class="processed-text mt-3">
+                    <strong>Văn bản sau tiền xử lý:</strong> {{ result.processed_text }}
+                    <div class="mt-2">
+                        {% for keyword in result.keywords %}
+                        <span class="badge text-bg-light border me-1">#{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
         {% endif %}
     </div>
 
-    <div class="col-lg-5">
+    <div class="col-lg-4">
         <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-chart-pie text-primary me-2"></i>Thống kê nhanh</h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-6 mb-3">
-                        <div class="stat-card bg-primary text-white rounded-3 p-3">
-                            <div class="fs-2 fw-bold">{{ stats.total }}</div>
-                            <div class="small">Tổng phản hồi</div>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="stat-card bg-success text-white rounded-3 p-3">
-                            <div class="fs-2 fw-bold">{{ stats.sentiment.get('positive', 0) }}</div>
-                            <div class="small">Tích cực</div>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="stat-card bg-danger text-white rounded-3 p-3">
-                            <div class="fs-2 fw-bold">{{ stats.sentiment.get('negative', 0) }}</div>
-                            <div class="small">Tiêu cực</div>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <div class="stat-card bg-info text-white rounded-3 p-3">
-                            <div class="fs-2 fw-bold">{{ stats.sentiment.get('neutral', 0) }}</div>
-                            <div class="small">Trung tính</div>
-                        </div>
-                    </div>
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Tổng quan dữ liệu</h5>
+                <div class="metric-main">
+                    <span class="text-muted">Tổng phản hồi</span>
+                    <strong>{{ stats.total }}</strong>
                 </div>
-
-                <a href="/dashboard" class="btn btn-outline-primary w-100 mt-2">
-                    <i class="fas fa-chart-bar me-1"></i>Xem dashboard chi tiết
-                </a>
+                <div class="metric-row"><span><i class="dot bg-success"></i>Tích cực</span><strong>{{ stats.sentiment.get('positive', 0) }}</strong></div>
+                <div class="metric-row"><span><i class="dot bg-secondary"></i>Trung tính</span><strong>{{ stats.sentiment.get('neutral', 0) }}</strong></div>
+                <div class="metric-row"><span><i class="dot bg-danger"></i>Tiêu cực</span><strong>{{ stats.sentiment.get('negative', 0) }}</strong></div>
+                <a href="/dashboard" class="btn btn-outline-primary w-100 mt-3">Mở dashboard</a>
             </div>
         </div>
-
         <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-info-circle text-primary me-2"></i>Hướng dẫn</h5>
-            </div>
-            <div class="card-body">
-                <ol class="mb-0">
-                    <li class="mb-2">Nhập phản hồi sinh viên vào ô văn bản</li>
-                    <li class="mb-2">Nhấn <strong>Phân tích</strong> để dự đoán sentiment</li>
-                    <li class="mb-2">Kết quả hiển thị: <span class="badge bg-success">Tích cực</span> / <span class="badge bg-danger">Tiêu cực</span> / <span class="badge bg-info">Trung tính</span></li>
-                    <li class="mb-2">Dữ liệu tự động lưu vào cơ sở dữ liệu MongoDB</li>
-                    <li>Xem <a href="/feedbacks">Danh sách</a> để quản lý và tìm kiếm</li>
-                </ol>
+            <div class="card-body p-4">
+                <h5 class="fw-bold">Pipeline khai phá</h5>
+                <div class="pipeline-list mt-3">
+                    <span>1</span><p>Tiền xử lý tiếng Việt</p>
+                    <span>2</span><p>Biểu diễn TF-IDF</p>
+                    <span>3</span><p>Phân loại Logistic Regression</p>
+                    <span>4</span><p>Lưu document vào MongoDB</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.sample-text').forEach((button) => {
+    button.addEventListener('click', () => {
+        document.getElementById('feedbackText').value = button.textContent.trim();
+    });
+});
+</script>
 {% endblock %}
