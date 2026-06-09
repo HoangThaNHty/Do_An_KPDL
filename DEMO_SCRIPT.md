@@ -3,7 +3,7 @@
 ## Chuẩn bị trước khi vào lớp
 
 ```powershell
-venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
 python -X utf8 scripts\seed_sample_data.py
 python -X utf8 scripts\smoke_test.py
 python -X utf8 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
@@ -62,9 +62,9 @@ Lời nói gợi ý:
 
 1. Mở **Dashboard**.
 2. Chỉ bốn thẻ thống kê tổng quan.
-3. Giải thích biểu đồ sentiment, topic và split.
-4. Chỉ danh sách phản hồi tiêu cực gần đây.
-5. Chỉ phần khuyến nghị.
+3. Chỉ rõ số lượng **UIT-VSFC gốc** và **manual/demo**.
+4. Giải thích biểu đồ sentiment, topic và split.
+5. Chỉ danh sách phản hồi tiêu cực gần đây và phần khuyến nghị.
 
 Lời nói gợi ý:
 
@@ -103,7 +103,8 @@ Kết thúc bằng hạn chế:
 
 ## Phương án dự phòng
 
-- Mất mạng: Bootstrap/Chart.js có thể cần cache; giữ sẵn ảnh chụp màn hình.
+- Mất mạng: Bootstrap và Chart.js đã lưu local; Font Awesome có thể thiếu icon
+  nhưng chức năng chính và biểu đồ vẫn chạy.
 - Hugging Face lỗi: không tải lại; dùng `data/sample_feedbacks.csv`.
 - Model lỗi: chạy `python -X utf8 scripts\train_models.py`.
 - MongoDB chưa chạy: mở Services và Start dịch vụ MongoDB.

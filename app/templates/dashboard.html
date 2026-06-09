@@ -15,6 +15,31 @@
     <div class="col-6 col-lg-3"><div class="summary-card summary-negative"><span>Tiêu cực</span><strong>{{ stats.sentiment.get('negative', 0) }}</strong></div></div>
 </div>
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <span class="eyebrow">NGUỒN DỮ LIỆU</span>
+                <h5 class="fw-bold mb-0">Dữ liệu gốc và dữ liệu demo</h5>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="prediction-box">
+                    <span class="text-muted small">UIT-VSFC gốc</span>
+                    <div class="fs-3 fw-bold text-primary">{{ stats.data_origin.get('uit_vsfc', 0) }}</div>
+                    <small class="text-muted">train + validation + test</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="prediction-box">
+                    <span class="text-muted small">Manual / demo</span>
+                    <div class="fs-3 fw-bold text-warning">{{ stats.data_origin.get('manual_demo', 0) }}</div>
+                    <small class="text-muted">phản hồi nhập hoặc seed mẫu</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-lg-4"><div class="card shadow-sm chart-card"><div class="card-body"><h5>Cảm xúc</h5><canvas id="sentimentChart"></canvas></div></div></div>
     <div class="col-lg-4"><div class="card shadow-sm chart-card"><div class="card-body"><h5>Chủ đề</h5><canvas id="topicChart"></canvas></div></div></div>
@@ -29,9 +54,11 @@
                 <div class="list-group list-group-flush mt-3">
                     {% for feedback in stats.recent_negative %}
                     <div class="list-group-item px-0">
-                        <div class="d-flex justify-content-between gap-3">
+                        <div class="recent-feedback-row">
                             <p class="mb-1">{{ feedback.sentence }}</p>
-                            <span class="badge text-bg-light border text-nowrap">{{ TOPIC_MAP[feedback.topic.label] }}</span>
+                            <span class="badge text-bg-light border recent-feedback-topic">
+                                {{ TOPIC_MAP[feedback.topic.label] }}
+                            </span>
                         </div>
                         <small class="text-muted">{{ feedback.created_at[:10] if feedback.created_at else '' }}</small>
                     </div>
