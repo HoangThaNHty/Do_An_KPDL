@@ -54,9 +54,11 @@
                 <div class="list-group list-group-flush mt-3">
                     {% for feedback in stats.recent_negative %}
                     <div class="list-group-item px-0">
-                        <div class="d-flex justify-content-between gap-3">
+                        <div class="recent-feedback-row">
                             <p class="mb-1">{{ feedback.sentence }}</p>
-                            <span class="badge text-bg-light border text-nowrap">{{ TOPIC_MAP[feedback.topic.label] }}</span>
+                            <span class="badge text-bg-light border recent-feedback-topic">
+                                {{ TOPIC_MAP[feedback.topic.label] }}
+                            </span>
                         </div>
                         <small class="text-muted">{{ feedback.created_at[:10] if feedback.created_at else '' }}</small>
                     </div>

@@ -127,6 +127,28 @@ body {
     font-weight: 600;
 }
 
+.recent-feedback-row {
+    display: flex;
+    gap: .75rem;
+    align-items: start;
+}
+
+.recent-feedback-row p {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.recent-feedback-topic {
+    flex: 0 0 auto;
+    max-width: min(140px, 45%);
+    padding: .45rem .55rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
+    text-align: center;
+}
+
 table thead th {
     padding: 1rem;
     color: var(--muted);
