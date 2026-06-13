@@ -9,9 +9,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from app.cleaning import extract_keywords
-from app.config import settings
-from app.db import build_feedback_document, check_connection, init_database, upsert_feedback
+from app.cleaning import extract_keywords  # noqa: E402
+from app.config import settings  # noqa: E402
+from app.db import build_feedback_document, check_connection, init_database, upsert_feedback  # noqa: E402
 
 
 INPUT_FILE = settings.data_dir / "processed" / "feedbacks.csv"

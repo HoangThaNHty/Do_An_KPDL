@@ -223,6 +223,7 @@ def get_all_feedbacks(
     topic_filter: str | None = None,
     split_filter: str | None = None,
     search: str | None = None,
+    sort_order: str = "desc",
 ) -> tuple[list[dict[str, Any]], int]:
     query: dict[str, Any] = {}
     if sentiment_filter:
@@ -233,12 +234,13 @@ def get_all_feedbacks(
         query["split"] = split_filter
     if search:
         query["sentence"] = {"$regex": re.escape(search), "$options": "i"}
+    sort_direction = ASCENDING if sort_order == "asc" else DESCENDING
     try:
         collection = get_collection()
         total = collection.count_documents(query)
         cursor = (
             collection.find(query)
-            .sort("created_at", DESCENDING)
+            .sort("created_at", sort_direction)
             .skip(skip)
             .limit(limit)
         )
@@ -371,3 +373,18 @@ def empty_stats() -> dict[str, Any]:
         "recent_negative": [],
         "recommendations": [],
     }
+
+
+def get_top_keywords_by_sentiment(sentiment_label: str, limit: int = 15) -> list[dict[str, Any]]:
+    try:
+        collection = get_collection()
+        pipeline = [
+            {"$match": {"sentiment.label": sentiment_label, "keywords": {"$exists": True, "$ne": []}}},
+            {"$unwind": "$keywords"},
+            {"$group": {"_id": "$keywords", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+            {"$limit": limit}
+        ]
+        return [{"keyword": str(item["_id"]), "count": int(item["count"])} for item in collection.aggregate(pipeline)]
+    except PyMongoError as exc:
+        raise DatabaseUnavailable(str(exc)) from exc

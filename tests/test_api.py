@@ -73,11 +73,35 @@ def test_feedback_api_rejects_invalid_labels() -> None:
         assert response.status_code == 422
 
 
+def test_feedback_list_api_passes_filters_and_sort(monkeypatch) -> None:
+    captured = {}
+
+    def fake_get_all_feedbacks(**kwargs):
+        captured.update(kwargs)
+        return [], 0
+
+    monkeypatch.setattr(main, "get_all_feedbacks", fake_get_all_feedbacks)
+    with TestClient(main.app) as client:
+        response = client.get(
+            "/api/feedbacks?page=2&limit=5&sentiment=negative"
+            "&topic=facility&search=phòng&sort=asc"
+        )
+
+    assert response.status_code == 200
+    assert response.json()["pagination"] == {"page": 2, "limit": 5, "total": 0}
+    assert captured["skip"] == 5
+    assert captured["limit"] == 5
+    assert captured["sentiment_filter"] == "negative"
+    assert captured["topic_filter"] == "facility"
+    assert captured["search"] == "phòng"
+    assert captured["sort_order"] == "asc"
+
+
 def test_export_csv_uses_utf8_bom(monkeypatch) -> None:
     monkeypatch.setattr(
         main,
         "get_all_feedbacks",
-        lambda skip, limit: (
+        lambda skip, limit, **kwargs: (
             [
                 {
                     "sentence": "Giảng viên dạy rất dễ hiểu",

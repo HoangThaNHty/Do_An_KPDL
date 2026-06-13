@@ -3,13 +3,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import matplotlib
-matplotlib.use("Agg")
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from wordcloud import WordCloud
+
+import matplotlib
+matplotlib.use("Agg")
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"

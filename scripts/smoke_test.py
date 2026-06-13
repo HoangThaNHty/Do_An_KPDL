@@ -7,9 +7,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from app.db import check_connection, get_stats
-from app.main import app
-from app.ml import model_service
+from app.db import check_connection, get_stats  # noqa: E402
+from app.main import app  # noqa: E402
+from app.ml import model_service  # noqa: E402
 
 
 def main() -> None:

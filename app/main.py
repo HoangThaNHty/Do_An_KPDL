@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import io
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -14,14 +15,13 @@ from fastapi import (
     Form,
     HTTPException,
     Query,
-    Request,
     UploadFile,
 )
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.cleaning import clean_text, extract_keywords
-from app.config import ROOT_DIR
+from app.config import ROOT_DIR, settings
 from app.db import (
     DatabaseUnavailable,
     build_feedback_document,
@@ -29,12 +29,12 @@ from app.db import (
     delete_feedback,
     empty_stats,
     get_all_feedbacks,
-    get_feedback_by_id,
     get_stats,
     init_database,
     insert_feedback,
     update_feedback,
     upsert_feedback,
+    get_top_keywords_by_sentiment,
 )
 from app.ml import ModelNotReadyError, model_service
 from app.schemas import FeedbackCreate, FeedbackUpdate, PredictRequest
@@ -356,14 +356,35 @@ async def remove_feedback(feedback_id: str):
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard():
     stats, database_warning = safe_stats()
+    pos_keywords = []
+    neg_keywords = []
+    if not database_warning:
+        try:
+            pos_keywords = get_top_keywords_by_sentiment("positive", limit=15)
+            neg_keywords = get_top_keywords_by_sentiment("negative", limit=15)
+        except Exception:
+            pass
     return render_template(
-        "dashboard.html", stats=stats, database_warning=database_warning
+        "dashboard.html",
+        stats=stats,
+        database_warning=database_warning,
+        pos_keywords=pos_keywords,
+        neg_keywords=neg_keywords,
     )
 
 
 @app.get("/about", response_class=HTMLResponse)
 async def about():
-    return render_template("about.html")
+    metrics_path = settings.data_dir / "reports" / "metrics.json"
+    comparison = None
+    if metrics_path.exists():
+        try:
+            with metrics_path.open("r", encoding="utf-8") as file:
+                data = json.load(file)
+                comparison = data.get("comparison")
+        except Exception:
+            pass
+    return render_template("about.html", comparison=comparison)
 
 
 # JSON API
@@ -383,6 +404,7 @@ async def api_feedbacks(
     topic: str | None = None,
     split: str | None = None,
     search: str | None = None,
+    sort: str = Query("desc", pattern="^(asc|desc)$"),
 ):
     try:
         documents, total = get_all_feedbacks(
@@ -392,6 +414,7 @@ async def api_feedbacks(
             topic_filter=topic,
             split_filter=split,
             search=search,
+            sort_order=sort,
         )
         return {
             "success": True,
@@ -569,9 +592,21 @@ async def api_import(file: UploadFile = File(...)):
 
 
 @app.get("/api/export")
-async def api_export():
+async def api_export(
+    sentiment: str | None = None,
+    topic: str | None = None,
+    split: str | None = None,
+    search: str | None = None,
+):
     try:
-        documents, _ = get_all_feedbacks(skip=0, limit=100_000)
+        documents, _ = get_all_feedbacks(
+            skip=0,
+            limit=100_000,
+            sentiment_filter=sentiment,
+            topic_filter=topic,
+            split_filter=split,
+            search=search,
+        )
     except DatabaseUnavailable as exc:
         raise HTTPException(status_code=503, detail=f"MongoDB chưa sẵn sàng: {exc}")
     rows = [

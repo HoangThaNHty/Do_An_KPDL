@@ -46,11 +46,65 @@
     <div class="col-lg-4"><div class="card shadow-sm chart-card"><div class="card-body"><h5>Tập dữ liệu</h5><canvas id="splitChart"></canvas></div></div></div>
 </div>
 
+<div class="row g-4 mb-4">
+    <!-- Positive Keywords Cloud -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="fw-bold text-success mb-3"><i class="fas fa-heart me-2"></i>Đám mây từ khóa Tích cực</h5>
+                <p class="small text-muted mb-3">Top từ khóa xuất hiện nhiều nhất từ phản hồi tích cực trong MongoDB:</p>
+                <div class="d-flex flex-wrap align-items-center justify-content-center p-3 border rounded bg-light" style="min-height: 150px;">
+                    {% if pos_keywords %}
+                        {% set max_count = pos_keywords[0].count %}
+                        {% for kw in pos_keywords %}
+                            <span class="badge bg-success m-1" style="font-size: {{ 0.85 + (kw.count / max_count) * 1.0 }}rem; opacity: {{ 0.75 + (kw.count / max_count) * 0.25 }};">
+                                {{ kw.keyword }} <small class="opacity-75">({{ kw.count }})</small>
+                            </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">Chưa đủ dữ liệu để tạo từ khóa.</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Negative Keywords Cloud -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="fw-bold text-danger mb-3"><i class="fas fa-face-frown me-2"></i>Đám mây từ khóa Tiêu cực</h5>
+                <p class="small text-muted mb-3">Top từ khóa xuất hiện nhiều nhất từ phản hồi tiêu cực trong MongoDB:</p>
+                <div class="d-flex flex-wrap align-items-center justify-content-center p-3 border rounded bg-light" style="min-height: 150px;">
+                    {% if neg_keywords %}
+                        {% set max_count = neg_keywords[0].count %}
+                        {% for kw in neg_keywords %}
+                            <span class="badge bg-danger m-1" style="font-size: {{ 0.85 + (kw.count / max_count) * 1.0 }}rem; opacity: {{ 0.75 + (kw.count / max_count) * 0.25 }};">
+                                {{ kw.keyword }} <small class="opacity-75">({{ kw.count }})</small>
+                            </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">Chưa đủ dữ liệu để tạo từ khóa.</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <div class="col-lg-7">
         <div class="card shadow-sm h-100">
             <div class="card-body">
-                <h5 class="fw-bold"><i class="fas fa-message text-danger me-2"></i>Phản hồi tiêu cực gần đây</h5>
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-1"><i class="fas fa-clock-rotate-left text-danger me-2"></i>Lịch sử phản hồi tiêu cực</h5>
+                        <small class="text-muted">5 phản hồi mới nhất trong MongoDB</small>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#negativeHistoryModal">
+                        <i class="fas fa-list-ul me-1"></i>Xem lịch sử
+                    </button>
+                </div>
                 <div class="list-group list-group-flush mt-3">
                     {% for feedback in stats.recent_negative %}
                     <div class="list-group-item px-0">
@@ -81,6 +135,68 @@
                 {% else %}
                 <p class="text-muted mt-3">Cần thêm dữ liệu để tạo khuyến nghị.</p>
                 {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="negativeHistoryModal" tabindex="-1" aria-labelledby="negativeHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title fw-bold" id="negativeHistoryModalLabel">
+                        <i class="fas fa-clock-rotate-left text-danger me-2"></i>Lịch sử phản hồi tiêu cực
+                    </h5>
+                    <small class="text-muted">Tìm kiếm, lọc và xem phản hồi theo thời gian.</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="negativeHistoryFilters" class="row g-3 align-items-end mb-3">
+                    <div class="col-lg-5">
+                        <label class="form-label">Tìm theo nội dung</label>
+                        <input id="negativeHistorySearch" class="form-control" placeholder="Nhập từ khóa...">
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label">Chủ đề</label>
+                        <select id="negativeHistoryTopic" class="form-select">
+                            <option value="">Tất cả chủ đề</option>
+                            {% for key, label in TOPIC_MAP.items() %}
+                            <option value="{{ key }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label class="form-label">Thời gian</label>
+                        <select id="negativeHistorySort" class="form-select">
+                            <option value="desc">Mới nhất</option>
+                            <option value="asc">Cũ nhất</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 d-flex gap-2">
+                        <button class="btn btn-danger flex-fill" type="submit" title="Lọc lịch sử">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary flex-fill" id="negativeHistoryReset" type="button" title="Đặt lại">
+                            <i class="fas fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="negativeHistoryStatus" class="alert alert-info py-2 d-none"></div>
+                <div id="negativeHistoryList" class="list-group list-group-flush negative-history-list"></div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <span class="small text-muted" id="negativeHistorySummary">Chưa tải dữ liệu.</span>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary" id="negativeHistoryPrev" type="button">
+                        <i class="fas fa-chevron-left me-1"></i>Trước
+                    </button>
+                    <button class="btn btn-outline-secondary" id="negativeHistoryNext" type="button">
+                        Sau<i class="fas fa-chevron-right ms-1"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -122,6 +238,140 @@ new Chart(document.getElementById('splitChart'), {
         datasets: [{ data: Object.values(stats.split), backgroundColor: '#f39c12', borderRadius: 7 }]
     },
     options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+});
+
+const negativeHistoryState = {
+    page: 1,
+    limit: 8,
+    totalPages: 1,
+};
+
+const negativeHistoryModal = document.getElementById('negativeHistoryModal');
+const negativeHistoryForm = document.getElementById('negativeHistoryFilters');
+const negativeHistorySearch = document.getElementById('negativeHistorySearch');
+const negativeHistoryTopic = document.getElementById('negativeHistoryTopic');
+const negativeHistorySort = document.getElementById('negativeHistorySort');
+const negativeHistoryReset = document.getElementById('negativeHistoryReset');
+const negativeHistoryList = document.getElementById('negativeHistoryList');
+const negativeHistoryStatus = document.getElementById('negativeHistoryStatus');
+const negativeHistorySummary = document.getElementById('negativeHistorySummary');
+const negativeHistoryPrev = document.getElementById('negativeHistoryPrev');
+const negativeHistoryNext = document.getElementById('negativeHistoryNext');
+
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    }[char]));
+}
+
+function showNegativeHistoryStatus(message, level = 'info') {
+    negativeHistoryStatus.className = `alert alert-${level} py-2`;
+    negativeHistoryStatus.textContent = message;
+}
+
+function hideNegativeHistoryStatus() {
+    negativeHistoryStatus.className = 'alert alert-info py-2 d-none';
+    negativeHistoryStatus.textContent = '';
+}
+
+function renderNegativeHistory(items, pagination) {
+    const total = pagination.total || 0;
+    negativeHistoryState.totalPages = Math.max(1, Math.ceil(total / negativeHistoryState.limit));
+    negativeHistorySummary.textContent = total
+        ? `Trang ${negativeHistoryState.page}/${negativeHistoryState.totalPages} · ${total} phản hồi`
+        : 'Không có phản hồi phù hợp.';
+    negativeHistoryPrev.disabled = negativeHistoryState.page <= 1;
+    negativeHistoryNext.disabled = negativeHistoryState.page >= negativeHistoryState.totalPages;
+
+    if (!items.length) {
+        negativeHistoryList.innerHTML = '<div class="text-muted text-center py-4">Không tìm thấy phản hồi tiêu cực phù hợp.</div>';
+        return;
+    }
+
+    negativeHistoryList.innerHTML = items.map((feedback) => {
+        const topicKey = feedback.topic?.label || '';
+        const topicLabel = topics[topicKey] || topicKey || '-';
+        const createdAt = feedback.created_at ? feedback.created_at.slice(0, 10) : '-';
+        const source = feedback.source || '-';
+        return `
+            <div class="list-group-item px-0">
+                <div class="recent-feedback-row">
+                    <div class="flex-grow-1">
+                        <p class="mb-2">${escapeHtml(feedback.sentence)}</p>
+                        <div class="d-flex flex-wrap gap-2 small text-muted">
+                            <span><i class="fas fa-calendar-day me-1"></i>${escapeHtml(createdAt)}</span>
+                            <span><i class="fas fa-database me-1"></i>${escapeHtml(source)}</span>
+                        </div>
+                    </div>
+                    <span class="badge text-bg-light border recent-feedback-topic">${escapeHtml(topicLabel)}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadNegativeHistory() {
+    showNegativeHistoryStatus('Đang tải lịch sử...');
+    const params = new URLSearchParams({
+        sentiment: 'negative',
+        page: String(negativeHistoryState.page),
+        limit: String(negativeHistoryState.limit),
+        sort: negativeHistorySort.value,
+    });
+    const topic = negativeHistoryTopic.value;
+    const search = negativeHistorySearch.value.trim();
+    if (topic) params.set('topic', topic);
+    if (search) params.set('search', search);
+
+    try {
+        const response = await fetch(`/api/feedbacks?${params.toString()}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.detail || 'Không thể tải lịch sử phản hồi');
+        hideNegativeHistoryStatus();
+        renderNegativeHistory(payload.data || [], payload.pagination || {});
+    } catch (error) {
+        showNegativeHistoryStatus(error.message, 'danger');
+        negativeHistoryList.innerHTML = '';
+        negativeHistorySummary.textContent = 'Không tải được dữ liệu.';
+        negativeHistoryPrev.disabled = true;
+        negativeHistoryNext.disabled = true;
+    }
+}
+
+negativeHistoryModal.addEventListener('shown.bs.modal', () => {
+    loadNegativeHistory();
+});
+
+negativeHistoryForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    negativeHistoryState.page = 1;
+    loadNegativeHistory();
+});
+
+negativeHistoryReset.addEventListener('click', () => {
+    negativeHistorySearch.value = '';
+    negativeHistoryTopic.value = '';
+    negativeHistorySort.value = 'desc';
+    negativeHistoryState.page = 1;
+    loadNegativeHistory();
+});
+
+negativeHistoryPrev.addEventListener('click', () => {
+    if (negativeHistoryState.page > 1) {
+        negativeHistoryState.page -= 1;
+        loadNegativeHistory();
+    }
+});
+
+negativeHistoryNext.addEventListener('click', () => {
+    if (negativeHistoryState.page < negativeHistoryState.totalPages) {
+        negativeHistoryState.page += 1;
+        loadNegativeHistory();
+    }
 });
 </script>
 {% endblock %}

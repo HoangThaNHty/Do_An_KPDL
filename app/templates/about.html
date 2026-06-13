@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Giới thiệu đề tài{% endblock %}
 
+{% block head %}
+<script src="/static/vendor/chartjs/chart.umd.min.js"></script>
+<style>
+    .border-top-double {
+        border-top: 3px double #dee2e6 !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="about-header mb-4">
     <span class="eyebrow">ĐỒ ÁN KHAI PHÁ DỮ LIỆU</span>
@@ -9,28 +18,250 @@
 </div>
 
 <div class="row g-4">
+    <!-- Info Section -->
     <div class="col-lg-7">
-        <div class="card shadow-sm h-100"><div class="card-body p-4">
-            <h4 class="fw-bold">Bài toán</h4>
-            <p>Phản hồi sinh viên thường là văn bản tự do, khó tổng hợp bằng các truy vấn dữ liệu truyền thống. SFAS tổ chức mỗi phản hồi thành một document MongoDB linh hoạt, đồng thời dùng học máy để tự động gán nhãn cảm xúc và chủ đề.</p>
-            <h4 class="fw-bold mt-4">Dataset UIT-VSFC</h4>
-            <p>Bộ dữ liệu Vietnamese Students' Feedback Corpus gồm phản hồi tiếng Việt được gán nhãn ba lớp cảm xúc và bốn nhóm chủ đề: giảng viên, chương trình đào tạo, cơ sở vật chất và nhóm khác.</p>
-            <h4 class="fw-bold mt-4">MongoDB và dữ liệu phi cấu trúc</h4>
-            <p class="mb-0">MongoDB lưu dữ liệu dưới dạng document BSON. Cấu trúc lồng cho phép lưu đồng thời câu gốc, nhãn thật, kết quả dự đoán, từ khóa và metadata mà không cần ép mọi thông tin vào bảng quan hệ cố định.</p>
-        </div></div>
-    </div>
-    <div class="col-lg-5">
-        <div class="card shadow-sm h-100"><div class="card-body p-4">
-            <h4 class="fw-bold">Pipeline hệ thống</h4>
-            <div class="pipeline-vertical mt-4">
-                <div><strong>1. Dataset</strong><span>UIT-VSFC / dữ liệu nhập tay</span></div>
-                <div><strong>2. Tiền xử lý</strong><span>Unicode, teencode, tách từ tiếng Việt</span></div>
-                <div><strong>3. MongoDB</strong><span>Lưu và quản lý document phản hồi</span></div>
-                <div><strong>4. TF-IDF</strong><span>Biểu diễn đặc trưng văn bản</span></div>
-                <div><strong>5. Phân loại</strong><span>Sentiment và topic</span></div>
-                <div><strong>6. Dashboard</strong><span>Thống kê và khuyến nghị</span></div>
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h4 class="fw-bold"><i class="fas fa-circle-info text-primary me-2"></i>Bài toán & Dữ liệu</h4>
+                <p class="mt-3">Phản hồi sinh viên thường là văn bản tự do, phi cấu trúc, rất khó tổng hợp bằng các truy vấn dữ liệu truyền thống. <strong>SFAS</strong> giải quyết bài toán này bằng cách tổ chức mỗi phản hồi thành một tài liệu (document) MongoDB linh hoạt, đồng thời dùng học máy để tự động phân loại cảm xúc và chủ đề.</p>
+
+                <h5 class="fw-bold mt-4">Dataset UIT-VSFC</h5>
+                <p>Bộ dữ liệu <strong>Vietnamese Students' Feedback Corpus</strong> gồm phản hồi tiếng Việt được gán nhãn:</p>
+                <ul>
+                    <li><strong>3 lớp cảm xúc:</strong> Tích cực (positive), Tiêu cực (negative), Trung tính (neutral).</li>
+                    <li><strong>4 nhóm chủ đề:</strong> Giảng viên (lecturer), Chương trình đào tạo (training_program), Cơ sở vật chất (facility), Khác (others).</li>
+                </ul>
+
+                <h5 class="fw-bold mt-4">MongoDB & Cơ sở dữ liệu phi cấu trúc</h5>
+                <p class="mb-0">MongoDB lưu trữ dữ liệu dưới dạng tài liệu BSON. Cấu trúc lồng (nested fields) cho phép lưu trữ đồng thời câu gốc, từ khóa trích xuất, kết quả dự đoán, độ tự tin của mô hình và thông tin phân đoạn dữ liệu (split) mà không cần ép thông tin vào bảng quan hệ cố định.</p>
             </div>
-        </div></div>
+        </div>
+    </div>
+
+    <!-- Pipeline Section -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h4 class="fw-bold"><i class="fas fa-gears text-primary me-2"></i>Pipeline hệ thống</h4>
+                <div class="pipeline-vertical mt-4">
+                    <div><strong>1. Dataset</strong><span>UIT-VSFC / Dữ liệu mẫu / Nhập tay</span></div>
+                    <div><strong>2. Tiền xử lý NLP</strong><span>Unicode NFC, Sửa teencode, Tách từ, Lọc stopword</span></div>
+                    <div><strong>3. Vector hóa</strong><span>Biểu diễn đặc trưng TF-IDF (Unigram + Bigram)</span></div>
+                    <div><strong>4. Học máy phân lớp</strong><span>Logistic Regression & Linear SVM</span></div>
+                    <div><strong>5. Lưu trữ MongoDB</strong><span>Đóng gói document & Lưu vào database</span></div>
+                    <div><strong>6. Khai thác & DSS</strong><span>Dashboard thống kê, Đám mây từ khóa, Khuyến nghị</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Model Comparison Section -->
+<div class="row g-4 mt-3">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h4 class="fw-bold"><i class="fas fa-scale-balanced text-primary me-2"></i>So sánh hiệu năng & Trực quan thuật toán</h4>
+                <p class="text-muted">Biểu đồ so sánh chỉ số F1-Score (Macro) và bảng kết quả đo lường của 3 mô hình trên tập kiểm thử (Test/Val Set):</p>
+
+                <div class="row g-4 align-items-center mt-2">
+                    <!-- Table column -->
+                    <div class="col-xl-7">
+                        {% if comparison %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle border mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tác vụ</th>
+                                        <th>Thuật toán</th>
+                                        <th>Accuracy</th>
+                                        <th>Precision (Macro)</th>
+                                        <th>Recall (Macro)</th>
+                                        <th class="text-primary fw-bold">F1-Score (Macro)</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sentiment -->
+                                    <tr>
+                                        <td rowspan="3" class="fw-bold border-end bg-light text-center">Phân loại Cảm xúc<br><small class="text-muted fw-normal">(Sentiment)</small></td>
+                                        <td>Multinomial Naive Bayes (NB)</td>
+                                        <td>{{ (comparison.sentiment.nb.accuracy * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.sentiment.nb.precision_macro * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.sentiment.nb.recall_macro * 100) | round(2) }}%</td>
+                                        <td class="text-primary fw-bold">{{ (comparison.sentiment.nb.f1_macro * 100) | round(2) }}%</td>
+                                        <td><span class="badge bg-light text-dark border">Thử nghiệm</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Logistic Regression (LR)</td>
+                                        <td>{{ (comparison.sentiment.lr.accuracy * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.sentiment.lr.precision_macro * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.sentiment.lr.recall_macro * 100) | round(2) }}%</td>
+                                        <td class="text-primary fw-bold">{{ (comparison.sentiment.lr.f1_macro * 100) | round(2) }}%</td>
+                                        <td>
+                                            {% if comparison.sentiment.selected_model == 'lr' %}
+                                            <span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>Đang chạy</span>
+                                            {% else %}
+                                            <span class="badge bg-light text-dark border">Thử nghiệm</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Linear SVM</td>
+                                        <td>{{ (comparison.sentiment.svm.accuracy * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.sentiment.svm.precision_macro * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.sentiment.svm.recall_macro * 100) | round(2) }}%</td>
+                                        <td class="text-primary fw-bold">{{ (comparison.sentiment.svm.f1_macro * 100) | round(2) }}%</td>
+                                        <td>
+                                            {% if comparison.sentiment.selected_model == 'svm' %}
+                                            <span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>Đang chạy</span>
+                                            {% else %}
+                                            <span class="badge bg-light text-dark border">Thử nghiệm</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <!-- Topic -->
+                                    <tr class="border-top-double">
+                                        <td rowspan="3" class="fw-bold border-end bg-light text-center">Phân loại Chủ đề<br><small class="text-muted fw-normal">(Topic)</small></td>
+                                        <td>Multinomial Naive Bayes (NB)</td>
+                                        <td>{{ (comparison.topic.nb.accuracy * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.topic.nb.precision_macro * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.topic.nb.recall_macro * 100) | round(2) }}%</td>
+                                        <td class="text-primary fw-bold">{{ (comparison.topic.nb.f1_macro * 100) | round(2) }}%</td>
+                                        <td><span class="badge bg-light text-dark border">Thử nghiệm</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Logistic Regression (LR)</td>
+                                        <td>{{ (comparison.topic.lr.accuracy * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.topic.lr.precision_macro * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.topic.lr.recall_macro * 100) | round(2) }}%</td>
+                                        <td class="text-primary fw-bold">{{ (comparison.topic.lr.f1_macro * 100) | round(2) }}%</td>
+                                        <td>
+                                            {% if comparison.topic.selected_model == 'lr' %}
+                                            <span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>Đang chạy</span>
+                                            {% else %}
+                                            <span class="badge bg-light text-dark border">Thử nghiệm</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Linear SVM</td>
+                                        <td>{{ (comparison.topic.svm.accuracy * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.topic.svm.precision_macro * 100) | round(2) }}%</td>
+                                        <td>{{ (comparison.topic.svm.recall_macro * 100) | round(2) }}%</td>
+                                        <td class="text-primary fw-bold">{{ (comparison.topic.svm.f1_macro * 100) | round(2) }}%</td>
+                                        <td>
+                                            {% if comparison.topic.selected_model == 'svm' %}
+                                            <span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>Đang chạy</span>
+                                            {% else %}
+                                            <span class="badge bg-light text-dark border">Thử nghiệm</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning py-3 mb-0">
+                            <i class="fas fa-circle-exclamation me-2"></i>Không tìm thấy dữ liệu so sánh mô hình. Vui lòng chạy <code>python scripts/train_models.py</code> để tạo dữ liệu chỉ số.
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Chart column -->
+                    <div class="col-xl-5">
+                        <div class="p-3 border rounded bg-light">
+                            <h6 class="fw-bold mb-3 text-center"><i class="fas fa-chart-bar me-1"></i>So sánh F1-Score (Macro) của các thuật toán</h6>
+                            <canvas id="comparisonChart" style="max-height: 280px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if comparison %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+        // Data from backend
+        const data = {
+            labels: ['Cảm xúc (Sentiment)', 'Chủ đề (Topic)'],
+            datasets: [
+                {
+                    label: 'Naive Bayes',
+                    data: [
+                        {{ (comparison.sentiment.nb.f1_macro * 100) | round(2) }},
+                        {{ (comparison.topic.nb.f1_macro * 100) | round(2) }}
+                    ],
+                    backgroundColor: 'rgba(108, 117, 125, 0.5)',
+                    borderColor: 'rgba(108, 117, 125, 1)',
+                    borderWidth: 1.5
+                },
+                {
+                    label: 'Logistic Regression',
+                    data: [
+                        {{ (comparison.sentiment.lr.f1_macro * 100) | round(2) }},
+                        {{ (comparison.topic.lr.f1_macro * 100) | round(2) }}
+                    ],
+                    backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 1.5
+                },
+                {
+                    label: 'Linear SVM',
+                    data: [
+                        {{ (comparison.sentiment.svm.f1_macro * 100) | round(2) }},
+                        {{ (comparison.topic.svm.f1_macro * 100) | round(2) }}
+                    ],
+                    backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    borderWidth: 1.5
+                }
+            ]
+        };
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Phần trăm (%) F1-Score',
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endif %}
 {% endblock %}

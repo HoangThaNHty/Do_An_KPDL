@@ -45,8 +45,9 @@
                 </select>
             </div>
             <div class="col-md-3 col-lg-2 d-flex gap-2">
-                <button class="btn btn-primary flex-fill"><i class="fas fa-filter"></i></button>
-                <a href="/feedbacks" class="btn btn-outline-secondary flex-fill"><i class="fas fa-rotate-left"></i></a>
+                <button class="btn btn-primary flex-fill" title="Lọc dữ liệu"><i class="fas fa-filter"></i></button>
+                <a href="/feedbacks" class="btn btn-outline-secondary flex-fill" title="Đặt lại"><i class="fas fa-rotate-left"></i></a>
+                <a href="/api/export?search={{ search or '' }}&sentiment={{ sentiment_filter or '' }}&topic={{ topic_filter or '' }}&split={{ split_filter or '' }}" class="btn btn-outline-success flex-fill" title="Xuất CSV theo bộ lọc"><i class="fas fa-download"></i></a>
             </div>
         </form>
     </div>

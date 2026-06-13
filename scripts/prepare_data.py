@@ -9,8 +9,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from app.cleaning import clean_text
-from app.config import settings
+from app.cleaning import clean_text  # noqa: E402
+from app.config import settings  # noqa: E402
 
 
 RAW_DIR = settings.data_dir / "raw"

@@ -12,12 +12,13 @@ except ImportError:  # The basic cleaner remains usable without the optional NLP
     word_tokenize = None
 
 
+# Cường hóa STOP_WORDS bằng cách giữ lại các từ biểu cảm tình thái quan trọng: "được", "bị", "rất", "nhưng"
 STOP_WORDS = {
-    "và", "của", "có", "được", "một", "các", "cho", "trong", "những",
+    "và", "của", "có", "một", "các", "cho", "trong", "những",
     "với", "là", "này", "khi", "về", "đến", "từ", "đã", "sẽ", "đang",
-    "để", "ra", "ở", "trên", "rất", "như", "lại", "cũng", "nên", "vì",
-    "mà", "bị", "đó", "tôi", "em", "bạn", "thì", "qua", "sau", "trước",
-    "tại", "theo", "vào", "hay", "hoặc", "nếu", "đây", "ấy", "nhưng",
+    "để", "ra", "ở", "trên", "như", "lại", "cũng", "nên", "vì",
+    "mà", "đó", "tôi", "em", "bạn", "thì", "qua", "sau", "trước",
+    "tại", "theo", "vào", "hay", "hoặc", "nếu", "đây", "ấy",
     "vẫn", "đều", "chỉ", "cùng", "mỗi", "việc",
 }
 
@@ -36,6 +37,8 @@ TEENCODE_MAP = {
     "z": "vậy",
     "r": "rồi",
     "ntn": "như thế nào",
+    "chả": "không",
+    "chẳng": "không",
 }
 
 URL_RE = re.compile(r"https?://\S+|www\.\S+", re.IGNORECASE)
@@ -48,22 +51,36 @@ def clean_text(text: object, do_segment: bool = True) -> str:
     if not isinstance(text, str):
         return ""
 
+    # Chuẩn hóa Unicode và loại nhiễu cơ bản
     value = unicodedata.normalize("NFC", text).strip().lower()
     value = URL_RE.sub(" ", value)
     value = MENTION_RE.sub(" ", value)
     value = NON_TEXT_RE.sub(" ", value)
-    words = [TEENCODE_MAP.get(word, word) for word in SPACE_RE.sub(" ", value).split()]
-    value = " ".join(word for word in words if word not in STOP_WORDS)
 
+    # 1. Map teencode trước để giữ tính nhất quán của văn bản tiếng Việt
+    words = [TEENCODE_MAP.get(word, word) for word in SPACE_RE.sub(" ", value).split()]
+    value = " ".join(words)
+
+    # 2. Tách từ tiếng Việt trước (giữ ngữ cảnh đầy đủ cho underthesea)
     if do_segment and value and word_tokenize is not None:
         try:
             value = word_tokenize(value, format="text")
         except Exception:
             pass
-    return SPACE_RE.sub(" ", value).strip()
+
+    # 3. Lọc bỏ từ dừng sau khi đã tách từ (so sánh cả cụm từ có gạch dưới và từ đơn)
+    tokens = value.split()
+    filtered_tokens = []
+    for token in tokens:
+        clean_tok = token.replace("_", " ")
+        if clean_tok not in STOP_WORDS and token not in STOP_WORDS:
+            filtered_tokens.append(token)
+
+    return " ".join(filtered_tokens)
 
 
 def extract_keywords(text: str, limit: int = 6) -> list[str]:
+    # Trích xuất từ khóa trên văn bản không phân tách từ (tách khoảng trắng)
     tokens = [
         token.replace("_", " ")
         for token in clean_text(text, do_segment=False).split()
